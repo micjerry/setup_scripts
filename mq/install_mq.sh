@@ -1,5 +1,7 @@
 #!/bin/bash
 
+LOCAL_IP="127.0.0.1"
+
 setup_sign() {
   wget -O - "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo apt-key add -
   
@@ -11,6 +13,20 @@ setup_mq() {
   apt-get update
   apt-get install rabbitmq-server
   rabbitmq-plugins enable rabbitmq_management
+}
+
+config_mq() {
+cat << EOT > /etc/rabbitmq/rabbitmq.config
+[
+  {rabbit, [
+    {disk_free_limit, 50000000},
+    {log_levels, [{connection, error}, {channel, error}]},
+    {tcp_listeners, [{"${LOCAL_IP}", 5672}]}
+  ]}
+].
+EOT  
+
+  systemctl restart rabbitmq-server.service
 }
 
 add_users() {
@@ -37,4 +53,5 @@ add_users() {
 
 setup_sign
 setup_mq
+config_mq
 add_users
