@@ -9,13 +9,11 @@ setup_sign() {
   echo "deb https://dl.bintray.com/rabbitmq/debian bionic main" >> /etc/apt/sources.list.d/bintray.rabbitmq.list
 }
 
-setup_mq() {
+setup() {
   apt-get update
-  apt-get install rabbitmq-server
+  apt-get -y install rabbitmq-server
   rabbitmq-plugins enable rabbitmq_management
-}
-
-config_mq() {
+  
 cat << EOT > /etc/rabbitmq/rabbitmq.config
 [
   {rabbit, [
@@ -24,12 +22,12 @@ cat << EOT > /etc/rabbitmq/rabbitmq.config
     {tcp_listeners, [{"${LOCAL_IP}", 5672}]}
   ]}
 ].
-EOT  
+EOT
 
   systemctl restart rabbitmq-server.service
 }
 
-add_users() {
+config() {
   /usr/sbin/rabbitmqctl add_user lgcall sysbaseAKL2019
   
   /usr/sbin/rabbitmqctl add_vhost vhostoper
@@ -52,6 +50,5 @@ add_users() {
 }
 
 setup_sign
-setup_mq
-config_mq
-add_users
+setup
+config
