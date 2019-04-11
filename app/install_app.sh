@@ -20,6 +20,7 @@ die() {
 echo "
 swagent-mod-main.jar=swagent
 lgsw-mgr.jar=swoutcall
+lgsw-cdr-main.jar=swcdr
 " > ${APP_NAMESMAP}
 
 load_env() {
