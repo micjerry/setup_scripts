@@ -14,15 +14,17 @@ class TestCase:
         taskid = str(uuid.uuid4())
         input = {
             "taskid" : taskid,
+			"groupid" : "alis23",
             "userid" : "ak989",
             "robotid": "abs",
             "callernumber" : "158765",
-            "calleenumber" : "15986657987",
+            "calleenumbers" : ["15986657987"],
             "gateway" : "",
             "swid" : "172.18.16.219",
             "maxduration" : 240,
             "ringduration" : 30,
             "dialog" : {
+			  "id": "sw189",
               "name": "getwill",
               "nodes" : [
                 {

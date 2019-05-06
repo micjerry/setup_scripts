@@ -7,6 +7,8 @@ DROP TABLE IF EXISTS `callhistory`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `callhistory` (
   `callid` varchar(32) NOT NULL,
+  `groupid` varchar(32) NOT NULL,
+  `dialogid` varchar(32) NOT NULL,
   `userid` varchar(32) NOT NULL,
   `robotid` varchar(32) NOT NULL,  
   `caller` varchar(32),
