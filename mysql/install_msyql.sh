@@ -4,6 +4,10 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
+MYSQL_HOST="localhost"
+MYSQL_SUSER="root"
+MYSQL_TMPAUFILE="mysql.temp"
+
 MYSQL_NEW_DBPATH="/opt/mysqldb/"
 MYSQL_DEFAULT_DBPATH="/var/lib/mysql/"
 MYSQL_SEC="ak2s098913"
@@ -57,19 +61,35 @@ config_mysql() {
   sleep 5
   local temp_se=`grep 'temporary password' ${MYSQL_ELOG} | awk -F 'localhost: ' '{print $2}'`
   [ -z "${temp_se}" ] && die "no temporary password found."
-  mysql -uroot --password="${temp_se}" --connect-expired-password < mysql.users
+cat << EOF > ${MYSQL_TMPAUFILE}
+[mysql]
+host = ${MYSQL_HOST}
+user = ${MYSQL_SUSER}
+password = ${temp_se}
+EOF
+
+  mysql --defaults-extra-file=${MYSQL_TMPAUFILE} --connect-expired-password < mysql.users
   rm -f mysql.users
+  rm -f ${MYSQL_TMPAUFILE}
 }
 
 initial_dbs() {
+cat << EOF > ${MYSQL_TMPAUFILE}
+[mysql]
+host = ${MYSQL_HOST}
+user = ${MYSQL_SUSER}
+password = ${MYSQL_SEC}
+EOF
   for filename in $(find . -name "create_*.sql"); do
     local dbfile_name=$(basename "$filename")
     local db_name=$(echo ${dbfile_name} | awk -F_ '{print $2}' | awk -F. '{print $1}')
     [ -z "${db_name}" ] && continue
     
-    echo "CREATE DATABASE ${db_name} CHARACTER SET utf8 COLLATE utf8_general_ci; " | mysql -uroot --password=${MYSQL_SEC}
-    mysql -u root -p${MYSQL_SEC} ${db_name} < ${filename}
+    echo "CREATE DATABASE ${db_name} CHARACTER SET utf8 COLLATE utf8_general_ci; " | mysql --defaults-extra-file=${MYSQL_TMPAUFILE}
+    mysql --defaults-extra-file=${MYSQL_TMPAUFILE} ${db_name} < ${filename}
   done
+  
+  rm -f ${MYSQL_TMPAUFILE}
 }
 
 install_mysql
