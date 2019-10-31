@@ -20,9 +20,11 @@ install_nginx() {
 
 config_nginx() {
 
+sed -i '/pid/c\pid /usr/local/nginx/logs/nginx.pid;' /etc/nginx/nginx.conf
+
 cat << EOT > /lib/systemd/system/nginx.service
 [Unit]
-Description=The Nginx 1.15.8 service
+Description=The Nginx 1.17.5 service
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
@@ -30,6 +32,7 @@ Type=forking
 PIDFile=/usr/local/nginx/logs/nginx.pid
 ExecStartPre=/usr/sbin/nginx -t
 ExecStart=/usr/sbin/nginx
+ExecStartPost=/bin/sleep 0.1
 ExecReload=/usr/sbin/nginx -s reload
 ExecStop=/bin/kill -s QUIT $MAINPID
 PrivateTmp=true
