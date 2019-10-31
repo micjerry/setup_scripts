@@ -1,6 +1,14 @@
 #!/bin/bash
+red=`tput setaf 1`
+green=`tput setaf 2`
+reset=`tput sgr0`
 
-LOCAL_IP="127.0.0.1"
+BIND_IPADDR=
+
+die() {
+  echo "${red}$1${reset}"
+  exit 1
+}
 
 install_deps() {
   sudo apt-get -y install build-essential libpcre3-dev zlib1g-dev libssl-dev libatomic-ops-dev libxml2-dev libxslt1-dev libgeoip1 libgeoip-dev libgd-dev libperl-dev
@@ -19,8 +27,9 @@ install_nginx() {
 }
 
 config_nginx() {
-
-sed -i '/pid/c\pid /usr/local/nginx/logs/nginx.pid;' /etc/nginx/nginx.conf
+  rm -f /etc/nginx/nginx.conf
+  cp nginx.conf /etc/nginx
+  sed -i "s/LOCALHOST/${BIND_IPADDR}/g" /etc/nginx/nginx.conf
 
 cat << EOT > /lib/systemd/system/nginx.service
 [Unit]
@@ -43,6 +52,33 @@ EOT
 
   sudo systemctl daemon-reload
 }
+
+usage()
+{
+  echo "Usage: $0 -h bind_ip_addr"
+  exit 0
+}
+
+while [[ $# -gt 1 ]]
+do
+  key="$1"
+  case $key in
+    -h|--host)
+      BIND_IPADDR="$2"
+      shift
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      echo "invalid arguments"
+      usage
+      ;;
+  esac
+  shift 
+done
+
+[ -z "${BIND_IPADDR}" ] && usage
 
 install_deps
 install_nginx
