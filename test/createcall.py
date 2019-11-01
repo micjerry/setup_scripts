@@ -20,7 +20,7 @@ class TestCase:
             "callernumber" : "158765",
             "calleenumbers" : ["15986657987"],
             "gateway" : "",
-            "swid" : "172.18.16.219",
+            "swid" : "localoneshot",
             "maxduration" : 240,
             "ringduration" : 30,
             "dialog" : {
@@ -76,12 +76,12 @@ class TestCase:
         params = json.dumps(input)
 
         headers = {
-            "Host": "127.0.0.1",
+            "Host": "192.168.5.23",
             "Content-Type": "application/json;charset=utf-8"
         }
 
         try:
-            connection = http.client.HTTPConnection("127.0.0.1", 8690)
+            connection = http.client.HTTPConnection("192.168.5.23", 80)
             connection.request("POST", "/swcall/createcall", params, headers)
             response = connection.getresponse().read()
             print("response = (%s)" % response)
