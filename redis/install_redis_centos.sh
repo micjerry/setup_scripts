@@ -15,13 +15,15 @@ die() {
 }
 
 install_deps() {
+  [ -f /etc/redhat-release ] || die "it is not a centos os."
+  if ! [ -x "$(command -v systemctl)" ]; then
+    die "systemctl is not installed."
+  fi
   [ -f rds_cluster_mgr.py ] || die "rds_cluster_mgr.py not found."
-  [ -f rds_cluster.sh ] || die "rds_cluster.sh not found."
+  [ -f rds_cluster_centos.sh ] || die "rds_cluster_centos.sh not found."
   #sudo apt-get update && sudo apt-get upgrade
-  sudo apt -y install make gcc libc6-dev tcl
-  sudo apt-get -y install python3-pip
-  python -m pip install python-redis
-  python -m pip install redis
+  sudo yum -y install gcc glibc-devel tcl
+  
 }
 
 install_redis() {
@@ -67,7 +69,8 @@ config_autostart() {
   dos2unix rds_cluster.sh
   chmod +x rds_cluster.sh
   [ -f ${REDIS_CONFIG_PATH}/rds_cluster.sh ] && rm -f ${REDIS_CONFIG_PATH}/rds_cluster.sh
-  cp rds_cluster.sh ${REDIS_CONFIG_PATH}
+  cp rds_cluster_centos.sh ${REDIS_CONFIG_PATH}
+  mv -f ${REDIS_CONFIG_PATH}/rds_cluster_centos.sh ${REDIS_CONFIG_PATH}/rds_cluster.sh
 cat << EOT > /lib/systemd/system/rdscluster.service
 [Unit]
 Description=Redis Cluster
