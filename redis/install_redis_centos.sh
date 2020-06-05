@@ -87,6 +87,7 @@ WantedBy=multi-user.target
 EOT
 
   sudo systemctl daemon-reload
+  systemctl enable rdscluster.service
   systemctl start rdscluster.service
 }
 
