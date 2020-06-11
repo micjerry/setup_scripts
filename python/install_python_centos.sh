@@ -17,7 +17,7 @@ install_pyenv() {
   [ -d /root/.pyenv ]
   mkdir -p /root/.pyenv
   tar -xzvf pyenv-1.2.14.tar.gz -C /root/.pyenv
-  mv -rf /root/.pyenv/pyenv-1.2.14/* /root/.pyenv
+  mv -f /root/.pyenv/pyenv-1.2.14/* /root/.pyenv
   rm -rf /root/.pyenv/pyenv-1.2.14
   sed -i "/PYENV_ROOT/d" ~/.bashrc
   sed -i "/pyenv init/d" ~/.bashrc
