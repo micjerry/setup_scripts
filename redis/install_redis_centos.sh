@@ -14,6 +14,10 @@ die() {
   exit 1
 }
 
+scl_bash() {
+  scl enable devtoolset-7 bash
+}
+
 install_deps() {
   [ -f /etc/redhat-release ] || die "it is not a centos os."
   if ! [ -x "$(command -v systemctl)" ]; then
@@ -23,7 +27,9 @@ install_deps() {
   [ -f rds_cluster_centos.sh ] || die "rds_cluster_centos.sh not found."
   #sudo apt-get update && sudo apt-get upgrade
   sudo yum -y install gcc glibc-devel tcl
-  
+  sudo yum install -y centos-release-scl
+  sudo yum install -y devtoolset-7-gcc*
+  scl_bash &
 }
 
 install_redis() {
